@@ -24,6 +24,8 @@
 	id<CTTabContents> parentOpener_; // the tab which opened this tab (unless nil)
 }
 
+@property(retain, nonatomic) NSView *view;
+
 @end
 
 

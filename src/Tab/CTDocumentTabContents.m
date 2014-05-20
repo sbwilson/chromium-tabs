@@ -7,21 +7,6 @@ NSString *const CTTabContentsDidCloseNotification = @"CTTabContentsDidCloseNotif
 
 @implementation CTDocumentTabContents
 
-// Custom @synthesize which invokes [browser_ updateTabStateForContent:self]
-// when setting values.
-#define _synthRetain(T, setname, getname) \
-- (T)getname { return getname##_; } \
-- (void)set##setname :(T)v { \
-  getname##_ = v; \
-  if (browser_) [browser_ updateTabStateForContent:self]; \
-}
-#define _synthAssign(T, setname, getname) \
-- (T)getname { return getname##_; } \
-- (void)set##setname :(T)v { \
-  getname##_ = v; \
-  if (browser_) [browser_ updateTabStateForContent:self]; \
-}
-
 // changing any of these implies [browser_ updateTabStateForContent:self]
 
 _synthAssign(BOOL, IsLoading, isLoading);
@@ -45,8 +30,6 @@ _synthRetain(NSImage*, Icon, icon);
 @synthesize isActive = isActive_;
 @synthesize isTeared = isTeared_;
 @synthesize isVisible = isVisible_;
-
-#undef _synth
 
 
 // KVO support

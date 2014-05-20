@@ -108,6 +108,10 @@
 		5AE30524153F0DD6001FCF20 /* NSWindow+CTThemed.h in Headers */ = {isa = PBXBuildFile; fileRef = 5AE3051E153F0DD6001FCF20 /* NSWindow+CTThemed.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		5AE30525153F0DD6001FCF20 /* NSWindow+CTThemed.m in Sources */ = {isa = PBXBuildFile; fileRef = 5AE3051F153F0DD6001FCF20 /* NSWindow+CTThemed.m */; };
 		6400E2F7192B60E600210D34 /* CTTabContents.h in Headers */ = {isa = PBXBuildFile; fileRef = 6400E2F5192B42E800210D34 /* CTTabContents.h */; settings = {ATTRIBUTES = (Public, ); }; };
+		6400E2FA192B639000210D34 /* CTViewControllerTabContents.h in Headers */ = {isa = PBXBuildFile; fileRef = 6400E2F8192B639000210D34 /* CTViewControllerTabContents.h */; settings = {ATTRIBUTES = (Public, ); }; };
+		6400E2FB192B639000210D34 /* CTViewControllerTabContents.m in Sources */ = {isa = PBXBuildFile; fileRef = 6400E2F9192B639000210D34 /* CTViewControllerTabContents.m */; };
+		6400E302192B67DB00210D34 /* TestViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 6400E2FD192B675500210D34 /* TestViewController.m */; };
+		6400E303192B67E100210D34 /* TestViewController.xib in Resources */ = {isa = PBXBuildFile; fileRef = 6400E2FE192B675500210D34 /* TestViewController.xib */; };
 		65B60C461557CF12008B0072 /* ChromiumTabs.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 3A3ED9831225E27E009E2908 /* ChromiumTabs.framework */; };
 		F1733CC0173B7D8400021BDE /* LICENSE in Resources */ = {isa = PBXBuildFile; fileRef = F1733CBE173B7D8400021BDE /* LICENSE */; };
 		F1733CC1173B7D8400021BDE /* LICENSE-chromium in Resources */ = {isa = PBXBuildFile; fileRef = F1733CBF173B7D8400021BDE /* LICENSE-chromium */; };
@@ -249,6 +253,11 @@
 		5AE3051E153F0DD6001FCF20 /* NSWindow+CTThemed.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "NSWindow+CTThemed.h"; sourceTree = "<group>"; };
 		5AE3051F153F0DD6001FCF20 /* NSWindow+CTThemed.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = "NSWindow+CTThemed.m"; sourceTree = "<group>"; };
 		6400E2F5192B42E800210D34 /* CTTabContents.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = CTTabContents.h; sourceTree = "<group>"; };
+		6400E2F8192B639000210D34 /* CTViewControllerTabContents.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = CTViewControllerTabContents.h; sourceTree = "<group>"; };
+		6400E2F9192B639000210D34 /* CTViewControllerTabContents.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = CTViewControllerTabContents.m; sourceTree = "<group>"; };
+		6400E2FC192B675500210D34 /* TestViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = TestViewController.h; sourceTree = "<group>"; };
+		6400E2FD192B675500210D34 /* TestViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = TestViewController.m; sourceTree = "<group>"; };
+		6400E2FE192B675500210D34 /* TestViewController.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; path = TestViewController.xib; sourceTree = "<group>"; };
 		8D1107320486CEB800E47090 /* Chromium Tabs.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = "Chromium Tabs.app"; sourceTree = BUILT_PRODUCTS_DIR; };
 		F1733CBE173B7D8400021BDE /* LICENSE */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; name = LICENSE; path = ../LICENSE; sourceTree = "<group>"; };
 		F1733CBF173B7D8400021BDE /* LICENSE-chromium */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; name = "LICENSE-chromium"; path = "../LICENSE-chromium"; sourceTree = "<group>"; };
@@ -427,6 +436,9 @@
 				3A928BBB1226F0AA00DA7E43 /* MyBrowser.m */,
 				3A928D0A12282DE500DA7E43 /* MyTabContents.h */,
 				3A928D0B12282DE500DA7E43 /* MyTabContents.m */,
+				6400E2FC192B675500210D34 /* TestViewController.h */,
+				6400E2FD192B675500210D34 /* TestViewController.m */,
+				6400E2FE192B675500210D34 /* TestViewController.xib */,
 			);
 			path = "simple-app";
 			sourceTree = "<group>";
@@ -483,6 +495,7 @@
 		5AE304E4153F0CEF001FCF20 /* Tab */ = {
 			isa = PBXGroup;
 			children = (
+				6400E2F5192B42E800210D34 /* CTTabContents.h */,
 				5AE304E5153F0CF7001FCF20 /* CTDocumentTabContents.h */,
 				5AE304E6153F0CF7001FCF20 /* CTDocumentTabContents.m */,
 				5AE304E9153F0D01001FCF20 /* CTTabContentsController.h */,
@@ -492,7 +505,8 @@
 				5AE304ED153F0D01001FCF20 /* CTTabControllerTarget.h */,
 				5AE304EE153F0D01001FCF20 /* CTTabView.h */,
 				5AE304EF153F0D01001FCF20 /* CTTabView.m */,
-				6400E2F5192B42E800210D34 /* CTTabContents.h */,
+				6400E2F8192B639000210D34 /* CTViewControllerTabContents.h */,
+				6400E2F9192B639000210D34 /* CTViewControllerTabContents.m */,
 			);
 			path = Tab;
 			sourceTree = "<group>";
@@ -590,6 +604,7 @@
 				5A53524A153F282200123D9D /* CTPresentationModeController.h in Headers */,
 				5A163432153FEC1600B6D159 /* CTFloatingBarBackingView.h in Headers */,
 				6400E2F7192B60E600210D34 /* CTTabContents.h in Headers */,
+				6400E2FA192B639000210D34 /* CTViewControllerTabContents.h in Headers */,
 				5A142BBF1540483D00E6B055 /* CTTabStripDragController.h in Headers */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -690,6 +705,7 @@
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				6400E303192B67E100210D34 /* TestViewController.xib in Resources */,
 				3A3EDA7E1225EC13009E2908 /* MainMenu.xib in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -726,6 +742,7 @@
 				5AE304F6153F0D01001FCF20 /* CTTabView.m in Sources */,
 				5AE304FF153F0D41001FCF20 /* HoverButton.m in Sources */,
 				5AE30501153F0D41001FCF20 /* HoverCloseButton.m in Sources */,
+				6400E2FB192B639000210D34 /* CTViewControllerTabContents.m in Sources */,
 				5AE30503153F0D41001FCF20 /* NewTabButton.m in Sources */,
 				5AE3050D153F0D8E001FCF20 /* BackgroundGradientView.m in Sources */,
 				5AE3050F153F0D8E001FCF20 /* FastResizeView.m in Sources */,
@@ -749,6 +766,7 @@
 				3A3EDA7B1225EBFF009E2908 /* AppDelegate.m in Sources */,
 				3A928BBC1226F0AA00DA7E43 /* MyBrowser.m in Sources */,
 				3A928D0C12282DE500DA7E43 /* MyTabContents.m in Sources */,
+				6400E302192B67DB00210D34 /* TestViewController.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

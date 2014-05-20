@@ -50,7 +50,7 @@ extern NSString *const CTTabContentsDidCloseNotification;
 @property(retain, nonatomic) id<TabContentsDelegate> delegate;
 @property(assign, nonatomic) unsigned int closedByUserGesture;
 @property(assign, nonatomic) BOOL isLoading;
-@property(retain, nonatomic) NSView *view;
+@property(nonatomic, readonly) NSView *view;
 @property(assign, nonatomic) BOOL isCrashed;
 @property(assign, nonatomic) BOOL isWaitingForResponse;
 @property(assign, nonatomic, setter = setVisible:) BOOL isVisible;
@@ -156,4 +156,20 @@ extern NSString *const CTTabContentsDidCloseNotification;
 -(BOOL)canReloadContents:(id<CTTabContents>)contents;
 -(BOOL)reload; // should set contents->isLoading_ = YES
 @end
+
+// Custom @synthesize which invokes [self.browser updateTabStateForContent:self]
+// when setting values.
+#define _synthRetain(T, setname, getname) \
+- (T)getname { return getname##_; } \
+- (void)set##setname :(T)v { \
+  getname##_ = v; \
+  if (self.browser) [self.browser updateTabStateForContent:self]; \
+}
+#define _synthAssign(T, setname, getname) \
+- (T)getname { return getname##_; } \
+- (void)set##setname :(T)v { \
+  getname##_ = v; \
+  if (self.browser) [self.browser updateTabStateForContent:self]; \
+}
+
 

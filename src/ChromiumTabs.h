@@ -11,6 +11,7 @@
 // including icon, title and state (loading, crashed, etc).
 #import <ChromiumTabs/CTTabContents.h>
 #import <ChromiumTabs/CTDocumentTabContents.h>
+#import <ChromiumTabs/CTViewControllerTabContents.h>
 
 // Toolbar view and view controller
 #import <ChromiumTabs/CTToolbarView.h>
