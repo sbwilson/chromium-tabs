@@ -29,7 +29,7 @@ typedef enum {
 
 // Create a new browser with a window.
 // @autoreleased
-+ (CTBrowser*)browser;
++ (instancetype)browser;
 
 // init
 - (id)init;

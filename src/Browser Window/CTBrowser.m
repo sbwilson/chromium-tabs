@@ -19,7 +19,7 @@
 @synthesize tabStripModel = tabStripModel_;
 
 
-+ (CTBrowser*)browser {
++ (instancetype)browser {
 	return [[self alloc] init];
 }
 
