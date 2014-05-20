@@ -394,7 +394,7 @@ static CTBrowserWindowController* _currentMain = nil; // weak
 
 // Accept tabs from a CTBrowserWindowController with the same Profile.
 - (BOOL)canReceiveFrom:(CTTabWindowController*)source {
-	if (![source isKindOfClass:[isa class]]) {
+	if (![source isKindOfClass:[[self class] class]]) {
 		return NO;
 	}
 	

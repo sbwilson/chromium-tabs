@@ -9,7 +9,6 @@
 #import "CTBrowserWindow.h"
 
 static const CGFloat kBrowserFrameViewPaintHeight = 60.0;
-static const NSPoint kBrowserFrameViewPatternPhaseOffset = { -5, 3 };
 
 static BOOL gCanDrawTitle = NO;
 static BOOL gCanGetCornerRadius = NO;

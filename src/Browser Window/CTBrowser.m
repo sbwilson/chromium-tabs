@@ -27,7 +27,7 @@
 // based on current window controller's class
 - (CTBrowser*)createNewBrowser {
 	// Create a new browser & window when we start
-	CTBrowser *browser = [isa browser];
+	CTBrowser *browser = [[self class] browser];
 	Class cls = self.windowController ? 
 		[self.windowController class] :
 		[CTBrowserWindowController class];
