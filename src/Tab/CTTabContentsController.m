@@ -3,16 +3,15 @@
 // found in the LICENSE-chromium file.
 
 #import "CTTabContentsController.h"
-#import "CTTabContents.h"
 #import "CTUtil.h"
 
 @implementation CTTabContentsController {
-	__weak CTTabContents* contents_;  // weak
+	__weak id<CTTabContents> contents_;  // weak
 	
 	IBOutlet NSSplitView* contentsContainer_;
 }
 
-- (id)initWithContents:(CTTabContents*)contents {
+- (id)initWithContents:(id<CTTabContents>)contents {
 	// subclasses might override this to load a different nib
 	NSBundle *bundle = [CTUtil bundleForResource:@"TabContents" ofType:@"nib"];
 	return [self initWithNibName:@"TabContents" bundle:bundle contents:contents];
@@ -20,7 +19,7 @@
 
 - (id)initWithNibName:(NSString*)name
                bundle:(NSBundle*)bundle
-             contents:(CTTabContents*)contents {
+             contents:(id<CTTabContents>)contents {
 	if ((self = [super initWithNibName:name bundle:bundle])) {
 		contents_ = contents;
 	}
@@ -63,7 +62,7 @@
 	[contents_ tabWillResignActive];
 }
 
-- (void)tabDidChange:(CTTabContents*)updatedContents {
+- (void)tabDidChange:(id<CTTabContents>)updatedContents {
 	// Calling setContentView: here removes any first responder status
 	// the view may have, so avoid changing the view hierarchy unless
 	// the view is different.

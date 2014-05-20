@@ -2,7 +2,7 @@
 
 @implementation MyTabContents
 
--(id)initWithBaseTabContents:(CTTabContents*)baseContents {
+-(id)initWithBaseTabContents:(id<CTTabContents>)baseContents {
   if (!(self = [super initWithBaseTabContents:baseContents])) return nil;
 
   // Setup our contents -- a scrolling text view

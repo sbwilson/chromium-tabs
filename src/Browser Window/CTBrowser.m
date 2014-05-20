@@ -1,5 +1,4 @@
 #import "CTBrowser.h"
-#import "CTTabContents.h"
 #import "CTTabStripModel.h"
 #import "CTPageTransition.h"
 #import "CTBrowserCommand.h"
@@ -8,6 +7,7 @@
 #import "CTTabContentsController.h"
 #import "CTToolbarController.h"
 #import "CTUtil.h"
+#import "CTDocumentTabContents.h"
 
 @implementation CTBrowser {
 	CTTabStripModel *tabStripModel_;
@@ -52,7 +52,7 @@
 }
 
 - (CTTabContentsController*)createTabContentsControllerWithContents:
-(CTTabContents*)contents {
+(id<CTTabContents>)contents {
 	// subclasses could override this
 	return [[CTTabContentsController alloc] initWithContents:contents];
 }
@@ -75,11 +75,11 @@
 	return tabStripModel_.activeIndex;
 }
 
-- (CTTabContents*)activeTabContents {
+- (id<CTTabContents>)activeTabContents {
 	return [tabStripModel_ activeTabContents];
 }
 
-- (CTTabContents*)tabContentsAtIndex:(int)index {
+- (id<CTTabContents>)tabContentsAtIndex:(int)index {
 	return [tabStripModel_ tabContentsAtIndex:index];
 }
 
@@ -92,7 +92,7 @@
 	return array;
 }
 
-- (int)indexOfTabContents:(CTTabContents*)contents {
+- (int)indexOfTabContents:(id<CTTabContents>)contents {
 	return [tabStripModel_ indexOfTabContents:contents];
 }
 
@@ -106,7 +106,7 @@
 									   changeType:CTTabChangeTypeAll];
 }
 
-- (void)updateTabStateForContent:(CTTabContents*)contents {
+- (void)updateTabStateForContent:(id<CTTabContents>)contents {
 	int index = [tabStripModel_ indexOfTabContents:contents];
 	if (index != -1) {
 		[tabStripModel_ updateTabContentsStateAtIndex:index 
@@ -115,7 +115,7 @@
 }
 
 - (void)replaceTabContentsAtIndex:(int)index
-				  withTabContents:(CTTabContents*)contents {
+				  withTabContents:(id<CTTabContents>)contents {
 	[tabStripModel_ replaceTabContentsAtIndex:index 
 								 withContents:contents];
 }
@@ -133,7 +133,7 @@
 #pragma mark -
 #pragma mark Callbacks
 
-- (void)loadingStateDidChange:(CTTabContents*)contents {
+- (void)loadingStateDidChange:(id<CTTabContents>)contents {
 	// TODO: Make sure the loading state is updated correctly
 }
 
@@ -168,7 +168,7 @@
 	[self.windowController close];
 }
 
-- (CTTabContents*)addTabContents:(CTTabContents*)contents
+- (void)addTabContents:(id<CTTabContents>)contents
 						 atIndex:(int)index
 					inForeground:(BOOL)foreground {
 	int addTypes = foreground ? (ADD_ACTIVE | ADD_INHERIT_GROUP) : ADD_NONE;
@@ -180,42 +180,43 @@
 		// TabStripModel::AddTabContents invokes HideContents if not foreground.
 		contents.isVisible = NO;
 	}
-	return contents;
 }
 
 
-- (CTTabContents*)addTabContents:(CTTabContents*)contents
+- (void)addTabContents:(id<CTTabContents>)contents
 					inForeground:(BOOL)foreground {
-	return [self addTabContents:contents atIndex:-1 inForeground:foreground];
+	[self addTabContents:contents atIndex:-1 inForeground:foreground];
 }
 
 
-- (CTTabContents*)addTabContents:(CTTabContents*)contents {
-	return [self addTabContents:contents atIndex:-1 inForeground:YES];
+- (void)addTabContents:(id<CTTabContents>)contents {
+	[self addTabContents:contents atIndex:-1 inForeground:YES];
 }
 
 
-- (CTTabContents*)createBlankTabBasedOn:(CTTabContents*)baseContents {
+- (id<CTTabContents>)createBlankTabBasedOn:(id<CTTabContents>)baseContents {
 	// subclasses should override this to provide a custom CTTabContents type
 	// and/or initialization
 	//  return [[[CTTabContents alloc] initWithBaseTabContents:baseContents] autorelease];
-	return [[CTTabContents alloc] initWithBaseTabContents:baseContents];
+	return [[CTDocumentTabContents alloc] initWithBaseTabContents:baseContents];
 }
 
 // implementation conforms to CTTabStripModelDelegate
-- (CTTabContents*)addBlankTabAtIndex:(int)index 
+- (id<CTTabContents>)addBlankTabAtIndex:(int)index
 						inForeground:(BOOL)foreground {
-	CTTabContents* baseContents = [tabStripModel_ activeTabContents];
-	CTTabContents* contents = [self createBlankTabBasedOn:baseContents];
-	return [self addTabContents:contents atIndex:index inForeground:foreground];
+	id<CTTabContents> baseContents = [tabStripModel_ activeTabContents];
+	id<CTTabContents> contents = [self createBlankTabBasedOn:baseContents];
+	[self addTabContents:contents atIndex:index inForeground:foreground];
+
+    return contents;
 }
 
 // implementation conforms to CTTabStripModelDelegate
-- (CTTabContents*)addBlankTabInForeground:(BOOL)foreground {
+- (id<CTTabContents>)addBlankTabInForeground:(BOOL)foreground {
 	return [self addBlankTabAtIndex:-1 inForeground:foreground];
 }
 
-- (CTTabContents*)addBlankTab {
+- (id<CTTabContents>)addBlankTab {
 	return [self addBlankTabInForeground:YES];
 }
 
@@ -332,7 +333,7 @@
 #pragma mark CTTabStripModelDelegate protocol implementation
 
 
-- (CTBrowser*)createNewStripWithContents:(CTTabContents*)contents {
+- (CTBrowser*)createNewStripWithContents:(id<CTTabContents>)contents {
 	//assert(CanSupportWindowFeature(FEATURE_TABSTRIP));
 	
 	//gfx::Rect new_window_bounds = window_bounds;
@@ -360,7 +361,7 @@
 // screen coordinates, used to place the new window, and |tab_bounds| are the
 // bounds of the dragged Tab view in the source window, in screen coordinates,
 // used to place the new Tab in the new window.
-- (void)continueDraggingDetachedTab:(CTTabContents*)contents
+- (void)continueDraggingDetachedTab:(id<CTTabContents>)contents
 					   windowBounds:(const NSRect)windowBounds
 						  tabBounds:(const NSRect)tabBounds {
 	NOTIMPLEMENTED();
@@ -386,7 +387,7 @@
 
 // Creates an entry in the historical tab database for the specified
 // CTTabContents.
-- (void)createHistoricalTab:(CTTabContents*)contents {
+- (void)createHistoricalTab:(id<CTTabContents>)contents {
 	DLOG("[ChromiumTabs] TODO createHistoricalTab %@", contents);
 }
 
@@ -395,7 +396,7 @@
 // function returns YES and the TabStripModel will wait before closing the
 // CTTabContents. If it returns NO, there are no unload listeners and the
 // TabStripModel can close the CTTabContents immediately.
-- (BOOL)runUnloadListenerBeforeClosing:(CTTabContents*)contents {
+- (BOOL)runUnloadListenerBeforeClosing:(id<CTTabContents>)contents {
 	return NO;
 }
 

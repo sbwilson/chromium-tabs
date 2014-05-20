@@ -39,7 +39,7 @@
 	[[NSNotificationCenter defaultCenter] removeObserver:self];
 }
 
-- (int)determineInsertionIndexWithContents:(CTTabContents *)newContents
+- (int)determineInsertionIndexWithContents:(id<CTTabContents>)newContents
 								transition:(CTPageTransition)transition
 							  inForeground:(BOOL)foreground {
 	int tab_count = [tabStripModel_ count];
@@ -74,7 +74,7 @@
 	assert(removedIndex >= 0 && removedIndex < tab_count);
 	
 	// if the closing tab has a valid parentOpener tab, return its index
-	CTTabContents* parentOpener =
+	id<CTTabContents> parentOpener =
 	[tabStripModel_ tabContentsAtIndex:removedIndex].parentOpener;
 	if (parentOpener) {
 		int index = [tabStripModel_ indexOfTabContents:parentOpener];

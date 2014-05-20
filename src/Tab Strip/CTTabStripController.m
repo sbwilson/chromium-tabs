@@ -5,7 +5,6 @@
 #import "CTTabStripController.h"
 
 #import <QuartzCore/QuartzCore.h>
-#import "CTTabContents.h"
 #import "CTBrowser.h"
 #import "CTUtil.h"
 #import "NSImage+CTAdditions.h"
@@ -54,7 +53,7 @@ const NSTimeInterval kAnimationDuration = 0.125;
 - (void)addSubviewToPermanentList:(NSView*)aView;
 - (void)regenerateSubviewList;
 - (NSInteger)indexForContentsView:(NSView*)view;
-- (void)updateFavIconForContents:(CTTabContents*)contents
+- (void)updateFavIconForContents:(id<CTTabContents>)contents
                          atIndex:(NSInteger)modelIndex;
 - (void)layoutTabsWithAnimation:(BOOL)animate
              regenerateSubviews:(BOOL)doUpdate;
@@ -207,7 +206,7 @@ const NSTimeInterval kAnimationDuration = 0.125;
 // whole are disabled while there are tabs closing.
 
 @implementation CTTabStripController {
-	__weak CTTabContents* currentTab_;  // weak, tab for which we're showing state
+	__weak id<CTTabContents> currentTab_;  // weak, tab for which we're showing state
 	CTTabStripView* tabStripView_;
 	__weak NSView* switchView_;  // weak
 	NSView* dragBlockingView_;  // avoid bad window server drags
@@ -425,9 +424,9 @@ const NSTimeInterval kAnimationDuration = 0.125;
 		// means the tab model is already fully formed with tabs. Need to walk the
 		// list and create the UI for each.
 		const int existingTabCount = [tabStripModel_ count];
-		const CTTabContents* selection = [tabStripModel_ activeTabContents];
+		const id<CTTabContents> selection = [tabStripModel_ activeTabContents];
 		for (int i = 0; i < existingTabCount; ++i) {
-			CTTabContents* currentContents = [tabStripModel_ tabContentsAtIndex:i];
+			id<CTTabContents> currentContents = [tabStripModel_ tabContentsAtIndex:i];
 			[self tabInsertedWithContents:currentContents
 								  atIndex:i
 							 inForeground:NO];
@@ -510,7 +509,7 @@ const NSTimeInterval kAnimationDuration = 0.125;
 	
 	// Make sure the new tabs's sheets are visible (necessary when a background
 	// tab opened a sheet while it was in the background and now becomes active).
-	CTTabContents* newTab __attribute__((unused)) = [tabStripModel_ tabContentsAtIndex:modelIndex];
+	id<CTTabContents> newTab __attribute__((unused)) = [tabStripModel_ tabContentsAtIndex:modelIndex];
 	assert(newTab);
 	// TODO: Possibly need to implement this for sheets to function properly
 	/*if (newTab) {
@@ -661,7 +660,7 @@ const NSTimeInterval kAnimationDuration = 0.125;
 	if (![tabStripModel_ containsIndex:index])
 		return;
 	
-	//CTTabContents* contents = tabStripModel_->GetTabContentsAt(index);
+	//id<CTTabContents> contents = tabStripModel_->GetTabContentsAt(index);
 	const NSInteger numberOfOpenTabs = [self numberOfOpenTabs];
 	if (numberOfOpenTabs > 1) {
 		BOOL isClosingLastTab = index == numberOfOpenTabs - 1;
@@ -1028,7 +1027,7 @@ const NSTimeInterval kAnimationDuration = 0.125;
 
 // Handles setting the title of the tab based on the given |contents|. Uses
 // a canned string if |contents| is NULL.
-- (void)setTabTitle:(NSViewController*)tab withContents:(CTTabContents*)contents {
+- (void)setTabTitle:(NSViewController*)tab withContents:(id<CTTabContents>)contents {
 	NSString* titleString = nil;
 	if (contents)
 		titleString = contents.title;
@@ -1119,7 +1118,7 @@ const NSTimeInterval kAnimationDuration = 0.125;
 
 // A helper routine for creating an NSImageView to hold the fav icon or app icon
 // for |contents|.
-- (NSImageView*)iconImageViewForContents:(CTTabContents*)contents {
+- (NSImageView*)iconImageViewForContents:(id<CTTabContents>)contents {
 	NSImage* image = contents.icon;
 	// Either we don't have a valid favicon or there was some issue converting it
 	// from an SkBitmap. Either way, just show the default.
@@ -1134,7 +1133,7 @@ const NSTimeInterval kAnimationDuration = 0.125;
 
 // Updates the current loading state, replacing the icon view with a favicon,
 // a throbber, the default icon, or nothing at all.
-- (void)updateFavIconForContents:(CTTabContents*)contents
+- (void)updateFavIconForContents:(id<CTTabContents>)contents
                          atIndex:(NSInteger)modelIndex {
 	if (!contents)
 		return;
@@ -1278,7 +1277,7 @@ const NSTimeInterval kAnimationDuration = 0.125;
 // previous window, setting |pinned| to YES will propagate that state to the
 // new window. Mini-tabs are either app or pinned tabs; the app state is stored
 // by the |contents|, but the |pinned| state is the caller's responsibility.
-- (void)dropTabContents:(CTTabContents*)contents
+- (void)dropTabContents:(id<CTTabContents>)contents
               withFrame:(NSRect)frame
             asPinnedTab:(BOOL)pinned {
 	int modelIndex = [self indexOfPlaceholder];
@@ -1669,7 +1668,7 @@ const NSTimeInterval kAnimationDuration = 0.125;
  }
  }*/
 
-/*- (void)updateDevToolsForContents:(CTTabContents*)contents {
+/*- (void)updateDevToolsForContents:(id<CTTabContents>)contents {
  int modelIndex = tabStripModel_->GetIndexOfTabContents(contents);
  
  // This happens e.g. if one hits cmd-q with a docked devtools window open.
@@ -1684,7 +1683,7 @@ const NSTimeInterval kAnimationDuration = 0.125;
  
  CTTabContentsController* tabController =
  [tabContentsArray_ objectAtIndex:index];
- CTTabContents* devtoolsContents = contents ?
+ id<CTTabContents> devtoolsContents = contents ?
  DevToolsWindow::GetDevToolsContents(contents) : NULL;
  [tabController showDevToolsContents:devtoolsContents];
  }*/
@@ -1706,7 +1705,7 @@ const NSTimeInterval kAnimationDuration = 0.125;
 
 - (void)tabDidInsert:(NSNotification *)notification {
 	NSDictionary *userInfo = notification.userInfo;
-	CTTabContents *contents = [userInfo valueForKey:CTTabContentsUserInfoKey];
+	id<CTTabContents>contents = [userInfo valueForKey:CTTabContentsUserInfoKey];
 	NSInteger modelIndex = [[userInfo valueForKey:CTTabIndexUserInfoKey] intValue];
 	BOOL isInForeground = [[userInfo valueForKey:CTTabOptionsUserInfoKey] boolValue];
 	[self tabInsertedWithContents:contents atIndex:modelIndex inForeground:isInForeground];
@@ -1714,7 +1713,7 @@ const NSTimeInterval kAnimationDuration = 0.125;
 
 // Called when a notification is received from the model to insert a new tab
 // at |modelIndex|.
-- (void)tabInsertedWithContents:(CTTabContents*)contents
+- (void)tabInsertedWithContents:(id<CTTabContents>)contents
                         atIndex:(NSInteger)modelIndex
                    inForeground:(BOOL)inForeground {
 	assert(contents);
@@ -1772,8 +1771,8 @@ const NSTimeInterval kAnimationDuration = 0.125;
 
 - (void)tabDidSelect:(NSNotification *)notification {
 	NSDictionary *userInfo = notification.userInfo;
-	CTTabContents *newContents = [userInfo valueForKey:CTTabNewContentsUserInfoKey];
-	CTTabContents *oldContents = [userInfo valueForKey:CTTabContentsUserInfoKey];
+	id<CTTabContents>newContents = [userInfo valueForKey:CTTabNewContentsUserInfoKey];
+	id<CTTabContents>oldContents = [userInfo valueForKey:CTTabContentsUserInfoKey];
 	NSInteger modelIndex = [[userInfo valueForKey:CTTabIndexUserInfoKey] intValue];
 	BOOL wasUserGesture = [[userInfo valueForKey:CTTabOptionsUserInfoKey] boolValue];
 	[self tabSelectedWithContents:newContents 
@@ -1784,8 +1783,8 @@ const NSTimeInterval kAnimationDuration = 0.125;
 
 // Called when a notification is received from the model to select a particular
 // tab. Swaps in the toolbar and content area associated with |newContents|.
-- (void)tabSelectedWithContents:(CTTabContents*)newContents
-               previousContents:(CTTabContents*)oldContents
+- (void)tabSelectedWithContents:(id<CTTabContents>)newContents
+               previousContents:(id<CTTabContents>)oldContents
                         atIndex:(NSInteger)modelIndex
                     userGesture:(BOOL)wasUserGesture {
 	// Take closing tabs into account.
@@ -1838,7 +1837,7 @@ const NSTimeInterval kAnimationDuration = 0.125;
 
 - (void)tabDidChange:(NSNotification *)notification {
 	NSDictionary *userInfo = notification.userInfo;
-	CTTabContents *contents = [userInfo valueForKey:CTTabContentsUserInfoKey];
+	id<CTTabContents>contents = [userInfo valueForKey:CTTabContentsUserInfoKey];
 	NSInteger modelIndex = [[userInfo valueForKey:CTTabIndexUserInfoKey] intValue];
 	CTTabChangeType change = (CTTabChangeType)[[userInfo valueForKey:CTTabOptionsUserInfoKey] intValue];
 	[self tabChangedWithContents:contents atIndex:modelIndex changeType:change];
@@ -1847,7 +1846,7 @@ const NSTimeInterval kAnimationDuration = 0.125;
 // Called when a notification is received from the model that the given tab
 // has been updated. |loading| will be YES when we only want to update the
 // throbber state, not anything else about the (partially) loading tab.
-- (void)tabChangedWithContents:(CTTabContents*)contents
+- (void)tabChangedWithContents:(id<CTTabContents>)contents
                        atIndex:(NSInteger)modelIndex
                     changeType:(CTTabChangeType)change {
 	// Take closing tabs into account.
@@ -1873,7 +1872,7 @@ const NSTimeInterval kAnimationDuration = 0.125;
 
 - (void)tabDidMove:(NSNotification *)notification {
 	NSDictionary *userInfo = notification.userInfo;
-	CTTabContents *contents = [userInfo valueForKey:CTTabContentsUserInfoKey];
+	id<CTTabContents>contents = [userInfo valueForKey:CTTabContentsUserInfoKey];
 	NSInteger modelFrom = [[userInfo valueForKey:CTTabIndexUserInfoKey] intValue];
 	NSInteger modelTo = [[userInfo valueForKey:CTTabToIndexUserInfoKey] intValue];
 	[self tabMovedWithContents:contents fromIndex:modelFrom toIndex:modelTo];
@@ -1882,7 +1881,7 @@ const NSTimeInterval kAnimationDuration = 0.125;
 // Called when a tab is moved (usually by drag&drop). Keep our parallel arrays
 // in sync with the tab strip model. It can also be pinned/unpinned
 // simultaneously, so we need to take care of that.
-- (void)tabMovedWithContents:(CTTabContents*)contents
+- (void)tabMovedWithContents:(id<CTTabContents>)contents
                    fromIndex:(NSInteger)modelFrom
                      toIndex:(NSInteger)modelTo {
 	// Take closing tabs into account.
@@ -1905,13 +1904,13 @@ const NSTimeInterval kAnimationDuration = 0.125;
 
 - (void)tabDidChangeMiniState:(NSNotification *)notification {
 	NSDictionary *userInfo = notification.userInfo;
-	CTTabContents *contents = [userInfo valueForKey:CTTabContentsUserInfoKey];
+	id<CTTabContents>contents = [userInfo valueForKey:CTTabContentsUserInfoKey];
 	NSInteger modelIndex = [[userInfo valueForKey:CTTabIndexUserInfoKey] intValue];
 	[self tabMiniStateChangedWithContents:contents atIndex:modelIndex];
 }
 
 // Called when a tab is pinned or unpinned without moving.
-- (void)tabMiniStateChangedWithContents:(CTTabContents*)contents
+- (void)tabMiniStateChangedWithContents:(id<CTTabContents>)contents
                                 atIndex:(NSInteger)modelIndex {
 	// Take closing tabs into account.
 	NSInteger index = [self indexFromModelIndex:modelIndex];
@@ -1930,7 +1929,7 @@ const NSTimeInterval kAnimationDuration = 0.125;
 
 - (void)tabDidDetach:(NSNotification *)notification {
 	NSDictionary *userInfo = notification.userInfo;
-	CTTabContents *contents = [userInfo valueForKey:CTTabContentsUserInfoKey];
+	id<CTTabContents>contents = [userInfo valueForKey:CTTabContentsUserInfoKey];
 	NSInteger modelIndex = [[userInfo valueForKey:CTTabIndexUserInfoKey] intValue];
 	[self tabDetachedWithContents:contents atIndex:modelIndex];
 }
@@ -1938,7 +1937,7 @@ const NSTimeInterval kAnimationDuration = 0.125;
 // Called when a notification is received from the model that the given tab
 // has gone away. Start an animation then force a layout to put everything
 // in motion.
-- (void)tabDetachedWithContents:(CTTabContents*)contents
+- (void)tabDetachedWithContents:(id<CTTabContents>)contents
                         atIndex:(NSInteger)modelIndex {
 	// Take closing tabs into account.
 	NSInteger index = [self indexFromModelIndex:modelIndex];

@@ -1,6 +1,7 @@
 #pragma once
 #import <Cocoa/Cocoa.h>
 #import "CTTabStripModelDelegate.h"
+#import "CTTabContents.h"
 
 typedef enum {
 	CTWindowOpenDispositionCurrentTab,
@@ -45,28 +46,28 @@ typedef enum {
 // CTTabContentsController subclass.
 // @autoreleased
 - (CTTabContentsController*)createTabContentsControllerWithContents:
-		(CTTabContents*)contents;
+		(id<CTTabContents>)contents;
 
 // Create a new default/blank CTTabContents.
 // |baseContents| represents the CTTabContents which is currently in the
 // foreground. It might be nil.
 // Subclasses could override this to provide a custom CTTabContents type.
 // @autoreleased
-- (CTTabContents*)createBlankTabBasedOn:(CTTabContents*)baseContents;
+- (id<CTTabContents>)createBlankTabBasedOn:(id<CTTabContents>)baseContents;
 
 // Add blank tab
-- (CTTabContents*)addBlankTabAtIndex:(int)index 
+- (id<CTTabContents>)addBlankTabAtIndex:(int)index
 						inForeground:(BOOL)foreground;
-- (CTTabContents*)addBlankTabInForeground:(BOOL)foreground;
-- (CTTabContents*)addBlankTab; // inForeground:YES
+- (id<CTTabContents>)addBlankTabInForeground:(BOOL)foreground;
+- (id<CTTabContents>)addBlankTab; // inForeground:YES
 
 // Add tab with contents
-- (CTTabContents*)addTabContents:(CTTabContents*)contents
+- (void)addTabContents:(id<CTTabContents>)contents
 						 atIndex:(int)index
 					inForeground:(BOOL)foreground;
-- (CTTabContents*)addTabContents:(CTTabContents*)contents
+- (void)addTabContents:(id<CTTabContents>)contents
 					inForeground:(BOOL)foreground;
-- (CTTabContents*)addTabContents:(CTTabContents*)contents; // inForeground:YES
+- (void)addTabContents:(id<CTTabContents>)contents; // inForeground:YES
 
 // Commands -- TODO: move to CTBrowserWindowController
 - (void)newWindow;
@@ -95,21 +96,21 @@ typedef enum {
 + (void)executeCommand:(int)cmd;
 
 // callbacks
-- (void)loadingStateDidChange:(CTTabContents*)contents;
+- (void)loadingStateDidChange:(id<CTTabContents>)contents;
 - (void)windowDidBeginToClose;
 
 // Convenience helpers (proxy for TabStripModel)
 - (int)tabCount;
 - (int)activeTabIndex;
-- (CTTabContents*)activeTabContents;
-- (CTTabContents*)tabContentsAtIndex:(int)index;
+- (id<CTTabContents>)activeTabContents;
+- (id<CTTabContents>)tabContentsAtIndex:(int)index;
 - (NSArray*)allTabContents;
-- (int)indexOfTabContents:(CTTabContents*)contents; // -1 if not found
+- (int)indexOfTabContents:(id<CTTabContents>)contents; // -1 if not found
 - (void)selectTabContentsAtIndex:(int)index userGesture:(BOOL)userGesture;
 - (void)updateTabStateAtIndex:(int)index;
-- (void)updateTabStateForContent:(CTTabContents*)contents;
+- (void)updateTabStateForContent:(id<CTTabContents>)contents;
 - (void)replaceTabContentsAtIndex:(int)index
-				  withTabContents:(CTTabContents*)contents;
+				  withTabContents:(id<CTTabContents>)contents;
 - (void)closeTabAtIndex:(int)index makeHistory:(BOOL)makeHistory;
 - (void)closeAllTabs;
 

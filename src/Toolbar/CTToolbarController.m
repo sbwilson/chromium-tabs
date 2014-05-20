@@ -25,7 +25,7 @@
 }
 
 
-- (void)updateToolbarWithContents:(CTTabContents*)contents
+- (void)updateToolbarWithContents:(id<CTTabContents>)contents
                shouldRestoreState:(BOOL)shouldRestore {
 	// subclasses should implement this
 }
