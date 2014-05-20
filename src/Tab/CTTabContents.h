@@ -1,8 +1,17 @@
-#pragma once
+//
+//  CTTabContents.h
+//  chromium-tabs
+//
+//  Created by Mark Aufflick on 20/05/2014.
+//
+//
+
 #import <Cocoa/Cocoa.h>
 
 @class CTTabStripModel;
 @class CTBrowser;
+
+@protocol TabContentsDelegate;
 
 extern NSString *const CTTabContentsDidCloseNotification;
 
@@ -33,39 +42,23 @@ extern NSString *const CTTabContentsDidCloseNotification;
 //               - tabDidResignKey
 //
 
-@interface CTTabContents : NSDocument {
-	BOOL isApp_;
-	BOOL isLoading_;
-	BOOL isWaitingForResponse_;
-	BOOL isCrashed_;
-	BOOL isVisible_;
-	BOOL isActive_;
-	BOOL isTeared_; // YES while being "teared" (dragged between windows)
-	BOOL isPinned_;
-	BOOL isBlocked_;
-	id delegate_;
-	unsigned int closedByUserGesture_; // TabStripModel::CloseTypes
-	NSView *view_; // the actual content
-	NSString *title_; // title of this tab
-	NSImage *icon_; // tab icon (nil means no or default icon)
-	CTBrowser *browser_;
-	CTTabContents* parentOpener_; // the tab which opened this tab (unless nil)
-}
 
+@protocol CTTabContents <NSObject>
+
+@property(strong, nonatomic) id<CTTabContents> parentOpener;
 @property(assign, nonatomic) BOOL isApp;
+@property(retain, nonatomic) id<TabContentsDelegate> delegate;
+@property(assign, nonatomic) unsigned int closedByUserGesture;
 @property(assign, nonatomic) BOOL isLoading;
+@property(nonatomic, readonly) NSView *view;
 @property(assign, nonatomic) BOOL isCrashed;
 @property(assign, nonatomic) BOOL isWaitingForResponse;
 @property(assign, nonatomic, setter = setVisible:) BOOL isVisible;
 @property(assign, nonatomic, setter = setActive:) BOOL isActive;
 @property(assign, nonatomic, setter = setTeared:) BOOL isTeared;
-@property(retain, nonatomic) id delegate;
-@property(assign, nonatomic) unsigned int closedByUserGesture;
-@property(retain, nonatomic) IBOutlet NSView *view;
 @property(retain, nonatomic) NSString *title;
 @property(retain, nonatomic) NSImage *icon;
 @property(retain, nonatomic) CTBrowser *browser;
-@property(strong, nonatomic) CTTabContents* parentOpener;
 
 // If this returns YES, special icons like throbbers and "crashed" is
 // displayed, even if |icon| is nil. By default this returns YES.
@@ -75,7 +68,7 @@ extern NSString *const CTTabContentsDidCloseNotification;
 // The default implementation does nothing with |baseContents| but subclasses
 // can use |baseContents| (the active CTTabContents, if any) to perform
 // customized initialization.
--(id)initWithBaseTabContents:(CTTabContents*)baseContents;
+-(id)initWithBaseTabContents:(id<CTTabContents>)baseContents;
 
 // Called when the tab should be destroyed (involves some finalization).
 //-(void)destroy:(CTTabStripModel *)sender;
@@ -88,13 +81,9 @@ extern NSString *const CTTabContentsDidCloseNotification;
 // Give first-responder status to view_ if isVisible
 - (BOOL)becomeFirstResponder;
 
-
 #pragma mark -
 #pragma mark Callbacks
 
-// Called when this tab may be closing (unless CTBrowser respond no to
-// canCloseTab).
--(void)closingOfTabDidStart:(CTTabStripModel *)model;
 
 // The following three callbacks are meant to be implemented by subclasses:
 // Called when this tab was inserted into a browser
@@ -102,7 +91,7 @@ extern NSString *const CTTabContentsDidCloseNotification;
                         atIndex:(NSInteger)index
                    inForeground:(BOOL)foreground;
 // Called when this tab replaced another tab
-- (void)tabReplaced:(CTTabContents*)oldContents
+- (void)tabReplaced:(id<CTTabContents>)oldContents
           inBrowser:(CTBrowser*)browser
             atIndex:(NSInteger)index;
 // Called when this tab is about to close
@@ -150,6 +139,10 @@ extern NSString *const CTTabContentsDidCloseNotification;
 // implementation makes our view the first responder, restoring focus.
 -(void)tabDidResignTeared;
 
+// Called when this tab may be closing (unless CTBrowser respond no to
+// canCloseTab).
+-(void)closingOfTabDidStart:(CTTabStripModel *)model;
+
 // Called when the frame has changed, which isn't too often.
 // There are at least two cases when it's called:
 // - When the tab's view is first inserted into the view hiearchy
@@ -160,7 +153,23 @@ extern NSString *const CTTabContentsDidCloseNotification;
 @end
 
 @protocol TabContentsDelegate
--(BOOL)canReloadContents:(CTTabContents*)contents;
+-(BOOL)canReloadContents:(id<CTTabContents>)contents;
 -(BOOL)reload; // should set contents->isLoading_ = YES
 @end
+
+// Custom @synthesize which invokes [self.browser updateTabStateForContent:self]
+// when setting values.
+#define _synthRetain(T, setname, getname) \
+- (T)getname { return getname##_; } \
+- (void)set##setname :(T)v { \
+  getname##_ = v; \
+  if (self.browser) [self.browser updateTabStateForContent:self]; \
+}
+#define _synthAssign(T, setname, getname) \
+- (T)getname { return getname##_; } \
+- (void)set##setname :(T)v { \
+  getname##_ = v; \
+  if (self.browser) [self.browser updateTabStateForContent:self]; \
+}
+
 

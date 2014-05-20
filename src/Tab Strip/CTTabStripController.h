@@ -7,13 +7,13 @@
 
 #import "CTTabControllerTarget.h"
 #import "URLDropTarget.h"
+#import "CTTabContents.h"
 
 @class NewTabButton;
 @class CTTabContentsController;
 @class CTTabView;
 @class CTTabStripView;
 
-@class CTTabContents;
 @class CTBrowser;
 
 @class CTTabStripModel;
@@ -64,7 +64,7 @@
 // previous window, setting |pinned| to YES will propagate that state to the
 // new window. Mini-tabs are either app or pinned tabs; the app state is stored
 // by the |contents|, but the |pinned| state is the caller's responsibility.
-- (void)dropTabContents:(CTTabContents*)contents
+- (void)dropTabContents:(id<CTTabContents>)contents
               withFrame:(NSRect)frame
             asPinnedTab:(BOOL)pinned;
 
@@ -132,7 +132,7 @@
 // functions.
 //- (void)attachConstrainedWindow:(ConstrainedWindowMac*)window;
 //- (void)removeConstrainedWindow:(ConstrainedWindowMac*)window;
-//- (void)updateDevToolsForContents:(CTTabContents*)contents;
+//- (void)updateDevToolsForContents:(id<CTTabContents>)contents;
 
 @end
 

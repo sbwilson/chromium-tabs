@@ -11,9 +11,9 @@
 
 #import "CTPageTransition.h"
 #import "CTTabStripModelDelegate.h"
+#import "CTTabContents.h"
 
 @class CTTabStripModelOrderController;
-@class CTTabContents;
 
 extern NSString* const CTTabInsertedNotification;
 extern NSString* const CTTabClosingNotification;
@@ -145,7 +145,7 @@ typedef enum {
 
 // Adds the specified CTTabContents in the default location. Tabs opened in the
 // foreground inherit the group of the previously active tab.
-- (void)appendTabContents:(CTTabContents *)contents
+- (void)appendTabContents:(id<CTTabContents>)contents
 			 inForeground:(BOOL)foreground;
 
 // Adds the specified CTTabContents at the specified location. |addTypes| is a
@@ -158,7 +158,7 @@ typedef enum {
 // |index| is changed is if using the index would result in breaking the
 // constraint that all mini-tabs occur before non-mini-tabs.
 // See also AddTabContents.
-- (void)insertTabContents:(CTTabContents *)contents
+- (void)insertTabContents:(id<CTTabContents>)contents
 				  atIndex:(int)index 
 			 withAddTypes:(int)addTypes;
 
@@ -184,13 +184,13 @@ typedef enum {
 // Replaces the tab contents at |index| with |newContents|.
 // This deletes the CTTabContents currently at |index|.
 - (void)replaceTabContentsAtIndex:(int)index
-					 withContents:(CTTabContents *)newContents;
+					 withContents:(id<CTTabContents>)newContents;
 
 // Detaches the CTTabContents at the specified index from this strip. The
 // CTTabContents is not destroyed, just removed from display. The caller is
 // responsible for doing something with it (e.g. stuffing it into another
 // strip).
-- (CTTabContents*)detachTabContentsAtIndex:(int)index;
+- (id<CTTabContents>)detachTabContentsAtIndex:(int)index;
 
 // Select the CTTabContents at the specified index. |userGesture| is true if
 // the user actually clicked on the tab or navigated to it using a keyboard
@@ -212,14 +212,14 @@ typedef enum {
 			   selectAfterMove:(BOOL)selectAfterMove;
 
 // Returns the currently active CTTabContents, or NULL if there is none.
-- (CTTabContents *)activeTabContents;
+- (id<CTTabContents>)activeTabContents;
 
 // Returns the CTTabContents at the specified index, or NULL if there is none.
-- (CTTabContents *)tabContentsAtIndex:(int)index;
+- (id<CTTabContents>)tabContentsAtIndex:(int)index;
 
 // Returns the index of the specified CTTabContents, or CTTabContents::kNoTab if
 // the CTTabContents is not in this TabStripModel.
-- (int)indexOfTabContents:(const CTTabContents *)contents;
+- (int)indexOfTabContents:(const id<CTTabContents>)contents;
 
 // Returns the index of the specified NavigationController, or -1 if it is
 // not in this TabStripModel.
@@ -270,7 +270,7 @@ typedef enum {
 // CTTabContents. Depending on the tab, and the transition type of the
 // navigation, the TabStripModel may adjust its selection and grouping
 // behavior.
-- (void)tabNavigating:(CTTabContents *)contents
+- (void)tabNavigating:(id<CTTabContents>)contents
 	   withTransition:(CTPageTransition)transition;
 
 // Changes the blocked state of the tab at |index|.
@@ -319,7 +319,7 @@ typedef enum {
 // specified insertion index, transition, etc. |addTypes| is a bitmask of
 // AddTypes; see it for details. This method ends up calling into
 // InsertTabContentsAt to do the actual inertion.
-- (int)addTabContents:(CTTabContents *)contents 
+- (int)addTabContents:(id<CTTabContents>)contents 
 			  atIndex:(int)index
 	   withTransition:(CTPageTransition)transition
 			 addTypes:(int)addTypes;
@@ -364,6 +364,6 @@ typedef enum {
 
 // Overridden from notificationObserver:
 // TODO replace with NSNotification if possible:
-- (void)tabContentsWasDestroyed:(CTTabContents *)contents;
+- (void)tabContentsWasDestroyed:(id<CTTabContents>)contents;
 
 @end

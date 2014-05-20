@@ -1,10 +1,10 @@
 #import <Cocoa/Cocoa.h>
 #import "CTTabWindowController.h"
+#import "CTTabContents.h"
 
 @class CTBrowser;
 @class CTTabStripController;
 @class CTToolbarController;
-@class CTTabContents;
 @class CTPresentationModeController;
 
 @interface NSDocumentController (CTBrowserWindowControllerAdditions)
@@ -99,7 +99,7 @@
 - (IBAction)newDocument:(id)sender;
 
 // Returns the active tab, or nil if there are no tabs.
-- (CTTabContents*)activeTabContents;
+- (id<CTTabContents>)activeTabContents;
 
 // Returns the index of the active tab, or -1 if there are no tabs.
 - (int)activeTabIndex;
@@ -107,7 +107,7 @@
 // Updates the toolbar with the states of the specified |contents|.
 // If |shouldRestore| is YES, we're switching (back?) to this tab and should
 // restore any previous state (such as user editing a text field) as well.
-- (void)updateToolbarWithContents:(CTTabContents*)tab
+- (void)updateToolbarWithContents:(id<CTTabContents>)tab
                shouldRestoreState:(BOOL)shouldRestore;
 
 // Brings this controller's window to the front.

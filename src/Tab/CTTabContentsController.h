@@ -5,8 +5,7 @@
 #pragma once
 
 #import <Cocoa/Cocoa.h>
-
-@class CTTabContents;
+#import "CTTabContents.h"
 
 // A class that controls the contents of a tab. It manages displaying the native
 // view for a given CTTabContents in |contentsContainer_|.
@@ -21,7 +20,7 @@
 // nib given by |name|.
 - (id)initWithNibName:(NSString*)name
                bundle:(NSBundle*)bundle
-             contents:(CTTabContents*)contents;
+             contents:(id<CTTabContents> )contents;
 
 // Create the contents of a tab represented by |contents| and loaded from a nib
 // called "TabContents".
@@ -33,7 +32,7 @@
 // If you use a nib with another name you should override the implementation in
 // your subclass and delegate the internal initialization to
 // initWithNibName:bundle:contents
-- (id)initWithContents:(CTTabContents*)contents;
+- (id)initWithContents:(id<CTTabContents> )contents;
 
 // Returns YES if the tab represented by this controller is the front-most.
 - (BOOL)isCurrentTab;
@@ -54,13 +53,13 @@
 // Called when the tab contents is updated in some non-descript way (the
 // notification from the model isn't specific). |updatedContents| could reflect
 // an entirely new tab contents object.
-- (void)tabDidChange:(CTTabContents*)updatedContents;
+- (void)tabDidChange:(id<CTTabContents> )updatedContents;
 
 // Shows |devToolsContents| in a split view, or removes the bottom view in the
 // split viewif |devToolsContents| is NULL.
 // TODO(thakis): Either move this to tab_window or move infobar handling to here
 // too -- http://crbug.com/31633 .
-//- (void)showDevToolsContents:(CTTabContents*)devToolsContents;
+//- (void)showDevToolsContents:(id<CTTabContents> )devToolsContents;
 
 // Returns the height required by devtools and divider, or 0 if no devtools are
 // docked to the tab.

@@ -9,8 +9,8 @@
 
 #import <Foundation/Foundation.h>
 #import "CTTabStripModel.h"
+#import "CTTabContents.h"
 
-@class CTTabContents;
 ///////////////////////////////////////////////////////////////////////////////
 // CTTabStripModelOrderController
 //
@@ -26,7 +26,7 @@
 
 // Determine where to place a newly opened tab by using the supplied
 // transition and foreground flag to figure out how it was opened.
-- (int)determineInsertionIndexWithContents:(CTTabContents *)newContents
+- (int)determineInsertionIndexWithContents:(id<CTTabContents>)newContents
 								transition:(CTPageTransition)transition
 							  inForeground:(BOOL)foreground;
 

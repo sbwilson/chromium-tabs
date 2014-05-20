@@ -1,8 +1,8 @@
 #import <Cocoa/Cocoa.h>
 #import "URLDropTarget.h"
+#import "CTTabContents.h"
 
 @class CTBrowser;
-@class CTTabContents;
 
 // A controller for the toolbar in the browser window.
 //
@@ -32,7 +32,7 @@
 
 // Called when the current tab is changing. Subclasses should implement this to
 // update the toolbar's state.
-- (void)updateToolbarWithContents:(CTTabContents*)contents
+- (void)updateToolbarWithContents:(id<CTTabContents>)contents
                shouldRestoreState:(BOOL)shouldRestore;
 
 // Called by the Window delegate so we can provide a custom field editor if

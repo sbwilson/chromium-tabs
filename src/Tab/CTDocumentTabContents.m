@@ -1,26 +1,11 @@
-#import "CTTabContents.h"
+#import "CTDocumentTabContents.h"
 #import "CTTabStripModel.h"
 #import "CTBrowser.h"
 //#import "KVOChangeScope.hh"
 
 NSString *const CTTabContentsDidCloseNotification = @"CTTabContentsDidCloseNotification";
 
-@implementation CTTabContents
-
-// Custom @synthesize which invokes [browser_ updateTabStateForContent:self]
-// when setting values.
-#define _synthRetain(T, setname, getname) \
-- (T)getname { return getname##_; } \
-- (void)set##setname :(T)v { \
-  getname##_ = v; \
-  if (browser_) [browser_ updateTabStateForContent:self]; \
-}
-#define _synthAssign(T, setname, getname) \
-- (T)getname { return getname##_; } \
-- (void)set##setname :(T)v { \
-  getname##_ = v; \
-  if (browser_) [browser_ updateTabStateForContent:self]; \
-}
+@implementation CTDocumentTabContents
 
 // changing any of these implies [browser_ updateTabStateForContent:self]
 
@@ -46,8 +31,6 @@ _synthRetain(NSImage*, Icon, icon);
 @synthesize isTeared = isTeared_;
 @synthesize isVisible = isVisible_;
 
-#undef _synth
-
 
 // KVO support
 + (BOOL)automaticallyNotifiesObserversForKey:(NSString*)key {
@@ -66,7 +49,7 @@ _synthRetain(NSImage*, Icon, icon);
 }
 
 
--(id)initWithBaseTabContents:(CTTabContents*)baseContents {
+-(id)initWithBaseTabContents:(id<CTTabContents> )baseContents {
   // subclasses should probably override this
   self.parentOpener = baseContents;
   return [super init];
@@ -78,11 +61,11 @@ _synthRetain(NSImage*, Icon, icon);
   return YES;
 }
 
-- (CTTabContents*)parentOpener {
+- (id<CTTabContents> )parentOpener {
   return parentOpener_;
 }
 
-- (void)setParentOpener:(CTTabContents*)parentOpener {
+- (void)setParentOpener:(id<CTTabContents> )parentOpener {
   NSNotificationCenter* nc = [NSNotificationCenter defaultCenter];
   if (parentOpener_) {
     [nc removeObserver:self
@@ -102,7 +85,7 @@ _synthRetain(NSImage*, Icon, icon);
 
 - (void)tabContentsDidClose:(NSNotification*)notification {
   // detach (NULLify) our parentOpener_ when it closes
-  CTTabContents* tabContents = [notification object];
+  id<CTTabContents>  tabContents = [notification object];
   if (tabContents == parentOpener_) {
     parentOpener_ = nil;
   }
@@ -179,7 +162,7 @@ _synthRetain(NSImage*, Icon, icon);
 }
 
 // Called when this tab replaced another tab
-- (void)tabReplaced:(CTTabContents*)oldContents
+- (void)tabReplaced:(id<CTTabContents> )oldContents
           inBrowser:(CTBrowser*)browser
             atIndex:(NSInteger)index {
   self.browser = browser;

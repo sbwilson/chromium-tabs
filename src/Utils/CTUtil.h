@@ -5,7 +5,7 @@
 extern NSBundle *CTFrameworkBundle;
 extern NSBundle *CTHostBundle; // main bundle -- the hosts' bundle
 
-inline NSString *L10n(NSString *key);
+NSString *L10n(NSString *key);
 
 @interface CTUtil : NSObject
 

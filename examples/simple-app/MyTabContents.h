@@ -2,7 +2,7 @@
 
 // This class represents a tab. In this example application a tab contains a
 // simple scrollable text area.
-@interface MyTabContents : CTTabContents {
+@interface MyTabContents : CTDocumentTabContents {
 }
 
 @end

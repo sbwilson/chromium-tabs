@@ -11,15 +11,13 @@
 #import "CTTabStripModelOrderController.h"
 #import "CTPageTransition.h"
 
-#import "CTTabContents.h"
-
 @interface CTTabStripModel (PrivateMethods)
 // Returns true if the specified CTTabContents is a New Tab at the end of the
 // TabStrip. We check for this because opener relationships are _not_
 // forgotten for the New Tab page opened as a result of a New Tab gesture
 // (e.g. Ctrl+T, etc) since the user may open a tab transiently to look up
 // something related to their current activity.
-- (BOOL)isNewTabAtEndOfTabStrip:(CTTabContents *)contents;
+- (BOOL)isNewTabAtEndOfTabStrip:(id<CTTabContents>)contents;
 
 // Closes the CTTabContents at the specified indices. This causes the
 // CTTabContents to be destroyed, but it may not happen immediately.  If the
@@ -40,7 +38,7 @@
 // The boolean parameter create_historical_tab controls whether to
 // record these tabs and their history for reopening recently closed
 // tabs.
-- (void)internalCloseTab:(CTTabContents *)contents
+- (void)internalCloseTab:(id<CTTabContents>)contents
 				 atIndex:(int)index
 	 createHistoricalTab:(BOOL)createHistoricalTabs;
 
@@ -48,7 +46,7 @@
 // active contents in |old_contents|, which may actually not be in
 // |contents_| anymore because it may have been removed by a call to say
 // DetachTabContentsAt...
-- (void)changeSelectedContentsFrom:(CTTabContents *)oldContents
+- (void)changeSelectedContentsFrom:(id<CTTabContents>)oldContents
 						   toIndex:(int)toIndex
 					   userGesture:(BOOL)userGesture;
 
@@ -67,13 +65,13 @@
 
 // Does the work for ReplaceTabContentsAt returning the old CTTabContents.
 // The caller owns the returned CTTabContents.
-- (CTTabContents *)replaceTabContentsAtImpl:(int)index
-							   withContents:(CTTabContents *)newContents;
+- (id<CTTabContents>)replaceTabContentsAtImpl:(int)index
+							   withContents:(id<CTTabContents>)newContents;
 @end
 
 @interface TabContentsData : NSObject {
 @public
-    CTTabContents* contents;
+    id<CTTabContents> contents;
 	BOOL isPinned;
 	BOOL isBlocked;
 }
@@ -179,7 +177,7 @@ const int kNoTab = NSNotFound;
     return index >= 0 && index < [self count];
 }
 
-- (void)appendTabContents:(CTTabContents *)contents
+- (void)appendTabContents:(id<CTTabContents>)contents
 			 inForeground:(BOOL)foreground {
 	int index = [orderController_ determineInsertionIndexForAppending];
 	[self insertTabContents:contents 
@@ -188,7 +186,7 @@ const int kNoTab = NSNotFound;
 	 ADD_NONE];
 }
 
-- (void)insertTabContents:(CTTabContents *)contents
+- (void)insertTabContents:(id<CTTabContents>)contents
 				  atIndex:(int)index 
 			 withAddTypes:(int)addTypes {
 	BOOL foreground = addTypes & ADD_ACTIVE;
@@ -206,7 +204,7 @@ const int kNoTab = NSNotFound;
 	// Have to get the active contents before we monkey with |contents_|
 	// otherwise we run into problems when we try to change the active contents
 	// since the old contents and the new contents will be the same...
-	CTTabContents* activeContents = [self activeTabContents];
+	id<CTTabContents> activeContents = [self activeTabContents];
 	TabContentsData* data = [[TabContentsData alloc] init];
 	data->contents = contents;
 	data->isPinned = pin;
@@ -236,18 +234,18 @@ const int kNoTab = NSNotFound;
 
 
 - (void)replaceTabContentsAtIndex:(int)index 
-					withContents:(CTTabContents *)newContents {
+					withContents:(id<CTTabContents>)newContents {
 	[self replaceTabContentsAtImpl:index
 					  withContents:newContents];
 }
 
-- (CTTabContents *)detachTabContentsAtIndex:(int)index {
+- (id<CTTabContents>)detachTabContentsAtIndex:(int)index {
 	if ([contentsData_ count] == 0)
 		return NULL;
 	
 	assert([self containsIndex:index]);
 	
-	CTTabContents* removedContents = [self tabContentsAtIndex:index];
+	id<CTTabContents> removedContents = [self tabContentsAtIndex:index];
 	int nextActiveIndex =
 		[orderController_ determineNewSelectedIndexAfterClose:index];
 	[contentsData_ removeObjectAtIndex:index];
@@ -312,11 +310,11 @@ const int kNoTab = NSNotFound;
 				selectAfterMove:selectAfterMove];
 }
 
-- (CTTabContents *)activeTabContents {
+- (id<CTTabContents>)activeTabContents {
 	return [self tabContentsAtIndex:activeIndex_];
 }
 
-- (CTTabContents *)tabContentsAtIndex:(int)index {
+- (id<CTTabContents>)tabContentsAtIndex:(int)index {
     if ([self containsIndex:index]) {
 		TabContentsData* data = [contentsData_ objectAtIndex:index];
 		return data->contents;
@@ -324,7 +322,7 @@ const int kNoTab = NSNotFound;
     return nil;
 }
 
-- (int)indexOfTabContents:(const CTTabContents *)contents {
+- (int)indexOfTabContents:(const id<CTTabContents>)contents {
 	int index = 0;
     for (TabContentsData* data in contentsData_) {
         if (data->contents == contents) {
@@ -372,7 +370,7 @@ const int kNoTab = NSNotFound;
 	return NO;
 }
 
-- (void)tabNavigating:(CTTabContents *)contents
+- (void)tabNavigating:(id<CTTabContents>)contents
 	   withTransition:(CTPageTransition)transition {
 	
 }
@@ -381,7 +379,7 @@ const int kNoTab = NSNotFound;
 			  blocked:(BOOL)blocked {
 	assert([self containsIndex:index]);
 	TabContentsData *data = [contentsData_ objectAtIndex:index];
-	CTTabContents *contents = data->contents;
+	id<CTTabContents>contents = data->contents;
 	if (data->isBlocked == blocked) {
 		return;
 	}
@@ -400,7 +398,7 @@ const int kNoTab = NSNotFound;
 - (void)setTabAtIndex:(int)index 
 			   pinned:(BOOL)pinned {
 	TabContentsData *data = [contentsData_ objectAtIndex:index];
-	CTTabContents *contents = data->contents;
+	id<CTTabContents>contents = data->contents;
 	if (data->isPinned == pinned)
 		return;
 	
@@ -457,7 +455,7 @@ const int kNoTab = NSNotFound;
 }
 
 - (BOOL)isAppTabAtIndex:(int)index {
-	CTTabContents* contents = [self tabContentsAtIndex:index];
+	id<CTTabContents> contents = [self tabContentsAtIndex:index];
 	return contents && contents.isApp;
 }
 
@@ -483,7 +481,7 @@ const int kNoTab = NSNotFound;
 
 #pragma mark -
 #pragma mark Command level API
-- (int)addTabContents:(CTTabContents *)contents 
+- (int)addTabContents:(id<CTTabContents>)contents 
 			  atIndex:(int)index
 	   withTransition:(CTPageTransition)transition
 			 addTypes:(int)addTypes {
@@ -565,7 +563,7 @@ const int kNoTab = NSNotFound;
 - (BOOL)isContextMenuCommandEnabled:(int)contextIndex
 						  commandID:(ContextMenuCommand)commandID {
 	assert(commandID > CommandFirst && commandID < CommandLast);
-	CTTabContents* contents;
+	id<CTTabContents> contents;
 	switch (commandID) {
 		case CommandNewTab:
 		case CommandCloseTab:
@@ -604,6 +602,11 @@ const int kNoTab = NSNotFound;
 	}
 	return NO;
 }
+
+// ARC will not allow reference to selectors that exist nowhere at all...
+-(BOOL)canReloadContents:(id<CTTabContents>)contents { NSAssert(0, @"Not intended for use"); return NO; }
+-(BOOL)reload { NSAssert(0, @"Not intended for use"); return NO; }
+
 
 - (BOOL)isContextMenuCommandChecked:(int)contextIndex
 						  commandID:(ContextMenuCommand)commandID {
@@ -683,7 +686,7 @@ const int kNoTab = NSNotFound;
 	return indices;
 }
 
-- (void)tabContentsWasDestroyed:(CTTabContents *)contents {
+- (void)tabContentsWasDestroyed:(id<CTTabContents>)contents {
 	int index = [self indexOfTabContents:contents];
 	if (index != kNoTab) {
 		// Note that we only detach the contents here, not close it - it's
@@ -694,7 +697,7 @@ const int kNoTab = NSNotFound;
 	
 #pragma mark -
 #pragma mark Private methods
-- (BOOL)isNewTabAtEndOfTabStrip:(CTTabContents *)contents {
+- (BOOL)isNewTabAtEndOfTabStrip:(id<CTTabContents>)contents {
 	return !contents || contents == [self tabContentsAtIndex:([self count] - 1)];
 	/*return LowerCaseEqualsASCII(contents->GetURL().spec(),
 	 chrome::kChromeUINewTabURL) &&
@@ -709,7 +712,7 @@ const int kNoTab = NSNotFound;
 	// We now return to our regularly scheduled shutdown procedure.
 	for (size_t i = 0; i < indices.count; ++i) {
 		int index = [[indices objectAtIndex:i] intValue];
-		CTTabContents* detachedContents = [self tabContentsAtIndex:index];
+		id<CTTabContents> detachedContents = [self tabContentsAtIndex:index];
 		[detachedContents closingOfTabDidStart:self]; // TODO notification
 		
 		if (![delegate_ canCloseContentsAt:index]) {
@@ -738,7 +741,7 @@ const int kNoTab = NSNotFound;
 	return retval;	
 }
 
-- (void)internalCloseTab:(CTTabContents *)contents
+- (void)internalCloseTab:(id<CTTabContents>)contents
 				 atIndex:(int)index
 	 createHistoricalTab:(BOOL)createHistoricalTabs {
     NSDictionary* userInfo = [NSDictionary dictionaryWithObjectsAndKeys:
@@ -761,11 +764,11 @@ const int kNoTab = NSNotFound;
 }
 
 
-- (void)changeSelectedContentsFrom:(CTTabContents *)oldContents
+- (void)changeSelectedContentsFrom:(id<CTTabContents>)oldContents
 						   toIndex:(int)toIndex
 					   userGesture:(BOOL)userGesture {
 	assert([self containsIndex:toIndex]);
-	CTTabContents* newContents = [self tabContentsAtIndex:toIndex];
+	id<CTTabContents> newContents = [self tabContentsAtIndex:toIndex];
 	if (oldContents == newContents)
 		return;
 
@@ -823,10 +826,10 @@ const int kNoTab = NSNotFound;
 													  userInfo:userInfo];
 }
 
-- (CTTabContents *)replaceTabContentsAtImpl:(int)index
-							   withContents:(CTTabContents *)newContents {
+- (id<CTTabContents>)replaceTabContentsAtImpl:(int)index
+							   withContents:(id<CTTabContents>)newContents {
 	assert([self containsIndex:index]);
-	CTTabContents* oldContents = [self tabContentsAtIndex:index];
+	id<CTTabContents> oldContents = [self tabContentsAtIndex:index];
 	TabContentsData* data = [contentsData_ objectAtIndex:index];
 	data->contents = newContents;
 	
