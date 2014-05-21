@@ -7,6 +7,7 @@ Pod::Spec.new do |spec|
   spec.summary      = 'Chromium tabs for cocoa applications.'
   spec.source       = { :git => 'https://github.com/aufflick/chromium-tabs.git', :tag => 'v0.0.1' }
   spec.source_files = 'src/**/*.{h,m,c}'
+  spec.resources    = 'resources/**/*.{xib,pdf,png}'
   spec.framework    = 'QuartzCore'
   spec.requires_arc = true
   spec.prefix_header_contents = '#import "common.h"'
