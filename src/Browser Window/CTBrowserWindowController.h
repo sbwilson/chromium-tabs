@@ -68,6 +68,8 @@
 // Ensure that the new tab button is never shown if set.
 @property(nonatomic, assign) BOOL disableNewTabButton;
 
+@property (nonatomic, readonly) CGFloat extraVerticalOffset;
+
 @property(readwrite, nonatomic, assign) BOOL shouldUsePresentationModeWhenEnteringFullscreen;
 
 //@property(readonly, nonatomic) BOOL shouldShowPresentationModeToggle;

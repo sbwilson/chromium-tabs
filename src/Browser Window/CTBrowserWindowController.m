@@ -760,14 +760,19 @@ static CTBrowserWindowController* _currentMain = nil; // weak
 		// with higher values, and then lay out the tab strip.
 		NSRect windowFrame = [contentView convertRect:[window frame] fromView:nil];
 		maxY = NSHeight(windowFrame) + yOffset;
+        maxY -= self.extraVerticalOffset;
 		maxY = [self layoutTabStripAtMaxY:maxY 
 									width:width 
 							   fullscreen:[self isFullscreen]];
 	}
+    else
+    {
+        maxY -= self.extraVerticalOffset;
+    }
 	
 	// Sanity-check |maxY|.
-	DCHECK_GE(maxY, minY);
-	DCHECK_LE(maxY, NSMaxY(contentBounds) + yOffset);
+	//DCHECK_GE(maxY, minY);
+	//DCHECK_LE(maxY, NSMaxY(contentBounds) + yOffset);
 	
 	// Place the toolbar at the top of the reserved area.
 	if ([self hasToolbar])
