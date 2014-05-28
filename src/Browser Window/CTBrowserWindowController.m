@@ -482,6 +482,10 @@ static CTBrowserWindowController* _currentMain = nil; // weak
 // new window will be the same size as this window.
 - (CTTabWindowController*)detachTabToNewWindow:(CTTabView*)tabView {
 	// Disable screen updates so that this appears as a single visual change.
+    
+    if (self.tabStripController.viewsCount == 1)
+        return self;
+    
 	NSDisableScreenUpdates();
 	@try {
 		// Keep a local ref to the tab strip model object
