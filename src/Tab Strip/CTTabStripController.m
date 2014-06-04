@@ -360,6 +360,7 @@ const NSTimeInterval kAnimationDuration = 0.125;
 		[newTabButton_ setTarget:nil];
 		[newTabButton_ setAction:@selector(commandDispatch:)];
 		[newTabButton_ setTag:CTBrowserCommandNewTab];
+		[newTabButton_ setBordered: NO];
 		// Set the images from code because Cocoa fails to find them in our sub
 		// bundle during tests.
 		[newTabButton_ setImage:kNewTabImage];
@@ -461,7 +462,7 @@ const NSTimeInterval kAnimationDuration = 0.125;
 	// we're gone.
 	for (CTTabController* controller in closingControllers_) {
 		NSView* view = [controller view];
-		[[[view animationForKey:@"frameOrigin"] delegate] invalidate];
+		[[(CAAnimation *)[view animationForKey:@"frameOrigin"] delegate] invalidate];
 	}
 	[[NSNotificationCenter defaultCenter] removeObserver:self];
 }
